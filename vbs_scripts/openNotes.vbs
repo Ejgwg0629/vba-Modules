@@ -1,3 +1,10 @@
+'
+' 以下を実行すれば、自己証明書を作成できる
+' C:\Program Files (x86)\Microsoft Office\root\Office16\SELFCERT.EXE
+'
+' Alt+F11 -> ツール -> デジタル署名 で証明書導入
+'
+
 Private Declare Function ShellExecute _
   Lib "shell32.dll" Alias "ShellExecuteA" ( _
   ByVal hwnd As Long, _
@@ -26,11 +33,20 @@ tryAnotherDoc:
     strText = wdDoc.Application.Selection.Range.Text
 
     strURL = Replace(regexRepl(strText, "^[> ]+", ""), Chr(13), "")
+
     strURL = Mid(strURL, InStr(LCase(strURL), "notes://") + 8)
-    serverName = Left(strURL, InStr(strURL, "/") - 1)
-    strURL = "Notes://" & serverName & Left(Mid(strURL, InStr(strURL, "/")), 83)
+    For i = 1 To Len(strURL)
+        If Mid(strURL, i, 1) = StrConv(Mid(strURL, i, 1), vbWide) Then
+            Exit For
+        End If
+
+    Next
+    i = i - 1
+
+    strURL = "Notes://" & Left(strURL, i)
     Debug.Print strURL
-    If Len(strURL) = 101 Or Len(strURL) = 99 Or Len(strURL) = 70 Then
+    'If Len(strURL) = 101 Or Len(strURL) = 99 Or Len(strURL) = 70 Then
+    If True Then
         lSuccess = ShellExecute(0, "Open", strURL)
     ElseIf Len(strURL) < 101 Then
         MsgBox ("Invalid notes link..")
