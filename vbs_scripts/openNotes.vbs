@@ -1,10 +1,3 @@
-'
-' 以下を実行すれば、自己証明書を作成できる
-' C:\Program Files (x86)\Microsoft Office\root\Office16\SELFCERT.EXE
-'
-' Alt+F11 -> ツール -> デジタル署名 で証明書導入
-'
-
 Private Declare Function ShellExecute _
   Lib "shell32.dll" Alias "ShellExecuteA" ( _
   ByVal hwnd As Long, _
@@ -33,17 +26,19 @@ tryAnotherDoc:
     strText = wdDoc.Application.Selection.Range.Text
 
     strURL = Replace(regexRepl(strText, "^[> ]+", ""), Chr(13), "")
-
     strURL = Mid(strURL, InStr(LCase(strURL), "notes://") + 8)
-    For i = 1 To Len(strURL)
-        If Mid(strURL, i, 1) = StrConv(Mid(strURL, i, 1), vbWide) Then
-            Exit For
-        End If
+    strURL = regexRepl(strURL, "(\w+/\w+/\w+/\w{32}).*$")
 
-    Next
-    i = i - 1
+    ' For i = 1 To Len(strURL)
+    '     If Mid(strURL, i, 1) = StrConv(Mid(strURL, i, 1), vbWide) Then
+    '         Exit For
+    '     End If
 
-    strURL = "Notes://" & Left(strURL, i)
+    ' Next
+    ' i = i - 1
+    ' strURL = "Notes://" & (strURL, i)
+
+    strURL = "Notes://" & strURL
     Debug.Print strURL
     'If Len(strURL) = 101 Or Len(strURL) = 99 Or Len(strURL) = 70 Then
     If True Then
